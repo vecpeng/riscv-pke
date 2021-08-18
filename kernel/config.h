@@ -4,6 +4,9 @@
 // we use only one HART (cpu) in fundamental experiments
 #define NCPU 1
 
+//interval of timer interrupt
+#define TIMER_INTERVAL 1000000
+
 #define DRAM_BASE 0x80000000
 
 /* we use fixed physical (also logical) addresses for the stacks and trap frames as in

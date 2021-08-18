@@ -67,6 +67,17 @@ static void delegate_traps() {
 }
 
 //
+// enabling timer interrupt (irq) in Machine mode
+//
+void timerinit(uintptr_t hartid) {
+  // fire timer irq after TIMER_INTERVAL from now.
+  *(uint64*)CLINT_MTIMECMP(hartid) = *(uint64*)CLINT_MTIME + TIMER_INTERVAL;
+
+  // enable machine-mode timer irq in MIE (Machine Interrupt Enable) csr.
+  write_csr(mie, read_csr(mie) | MIE_MTIE);
+}
+
+//
 // m_start: machine mode C entry point.
 //
 void m_start(uintptr_t hartid, uintptr_t dtb) {
@@ -89,8 +100,14 @@ void m_start(uintptr_t hartid, uintptr_t dtb) {
   // setup trap handling vector
   write_csr(mtvec, (uint64)mtrapvec);
 
+  // enable machine-mode interrupts.
+  write_csr(mstatus, read_csr(mstatus) | MSTATUS_MIE);
+
   // delegate all interrupts and exceptions to supervisor mode.
   delegate_traps();
+  write_csr(sie, read_csr(sie) | SIE_SEIE | SIE_STIE | SIE_SSIE);
+
+  timerinit(hartid);
 
   // switch to supervisor mode and jump to s_start(), i.e., set pc to mepc
   asm volatile("mret");
