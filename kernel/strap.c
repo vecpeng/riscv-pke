@@ -23,7 +23,6 @@ static void handle_syscall(trapframe *tf) {
   // IMPORTANT: return value should be returned to user app, or else, you will encounter
   // problems in later experiments!
   do_syscall(tf->regs.a0, tf->regs.a1, 0, 0, 0, 0, 0, 0);
-  // do_syscall(SYS_user_exit, res, 0, 0, 0, 0, 0, 0);
 }
 
 //
