@@ -10,7 +10,6 @@
 #include "util/string.h"
 #include "spike_interface/spike_utils.h"
 #include "util/functions.h"
-
 /* --- utility functions for virtual address mapping --- */
 //
 // establish mapping of virtual address [va, va+size] to phyiscal address [pa, pa+size]
@@ -157,8 +156,11 @@ void *user_va_to_pa(pagetable_t page_dir, void *va) {
   // (va - va & (1<<PGSHIFT -1)) means computing the offset of "va" in its page.
   // Also, it is possible that "va" is not mapped at all. in such case, we can find
   // invalid PTE, and should return NULL.
-  panic( "You have to implement user_va_to_pa (convert user va to pa) to print messages in lab2_1.\n" );
-
+  pte_t *pte = page_walk(page_dir, (uint64)(va), 0);
+  uint64 pa = 0;
+  pa += PTE2PA((*pte));
+  pa += ((uint64)(va) & ((1<<PGSHIFT)-1));
+  return (void *)pa;
 }
 
 //
