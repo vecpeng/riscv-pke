@@ -22,7 +22,8 @@ static void handle_syscall(trapframe *tf) {
   // kernel/syscall.c) to conduct real operations of the kernel side for a syscall.
   // IMPORTANT: return value should be returned to user app, or else, you will encounter
   // problems in later experiments!
-  do_syscall(tf->regs.a0, tf->regs.a1, 0, 0, 0, 0, 0, 0);
+  long code = do_syscall(tf->regs.a0, tf->regs.a1, 0, 0, 0, 0, 0, 0);
+  tf->regs.a0 = code;
 }
 
 //
