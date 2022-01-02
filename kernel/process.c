@@ -168,7 +168,6 @@ int do_fork( process* parent)
 {
   sprint( "will fork a child from parent %d.\n", parent->pid );
   process* child = alloc_process();
-
   for( int i=0; i<parent->total_mapped_region; i++ ){
     // browse parent's vm space, and copy its trapframe and data segments,
     // map its code segment.
@@ -190,8 +189,9 @@ int do_fork( process* parent)
         // address region of child to the physical pages that actually store the code
         // segment of parent process. 
         // DO NOT COPY THE PHYSICAL PAGES, JUST MAP THEM.
-        panic( "You need to implement the code segment mapping of child in lab3_1.\n" );
-
+        ;
+        uint64 parent_pa = lookup_pa(parent->pagetable, parent->mapped_info[i].va);
+        map_pages(parent->pagetable, child->mapped_info[2].va, PGSIZE, parent_pa, 1);
         // after mapping, register the vm region (do not delete codes below!)
         child->mapped_info[child->total_mapped_region].va = parent->mapped_info[i].va;
         child->mapped_info[child->total_mapped_region].npages = 
