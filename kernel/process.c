@@ -190,8 +190,13 @@ int do_fork( process* parent)
         // segment of parent process. 
         // DO NOT COPY THE PHYSICAL PAGES, JUST MAP THEM.
         ;
-        uint64 parent_pa = lookup_pa(parent->pagetable, parent->mapped_info[i].va);
-        map_pages(parent->pagetable, child->mapped_info[2].va, PGSIZE, parent_pa, 1);
+        uint64 parent_va = parent->mapped_info[i].va;
+        uint64 parent_pa = lookup_pa(parent->pagetable, parent_va);
+        // 注意这里是代码段，需要执行权限，所以需要加上PROT_EXEC权限
+        // 注意prot_to_type第二个参数传1，它表示用户是否可以访问
+        map_pages(child->pagetable, parent_va, PGSIZE * parent->mapped_info[i].npages,
+    parent_pa, prot_to_type(PROT_READ | PROT_EXEC, 1));
+
         // after mapping, register the vm region (do not delete codes below!)
         child->mapped_info[child->total_mapped_region].va = parent->mapped_info[i].va;
         child->mapped_info[child->total_mapped_region].npages = 
