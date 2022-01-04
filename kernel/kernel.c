@@ -61,7 +61,7 @@ int s_start(void) {
 
   // now, switch to paging mode by turning on paging (SV39)
   enable_paging();
-  sprint("kernel page table is on \n");
+  sprint("kernel page table is on\n");
 
   init_proc_pool();
 
